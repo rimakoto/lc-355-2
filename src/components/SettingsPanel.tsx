@@ -5,6 +5,7 @@ import {
   requestNotificationPermission,
   isNotificationSupported,
   getNotificationPermission,
+  sendDailyQuoteNotification,
 } from '@/utils/notification';
 
 interface SettingsPanelProps {
@@ -41,9 +42,16 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
     setTestResult(null);
     const permission = await requestNotificationPermission();
     setPermissionStatus(permission);
+
+    let notificationSent = false;
+    if (permission === 'granted') {
+      const notification = sendDailyQuoteNotification();
+      notificationSent = notification !== null;
+    }
+
     setTimeout(() => {
       setTestingNotification(false);
-      setTestResult(permission === 'granted' ? 'success' : 'fail');
+      setTestResult(notificationSent ? 'success' : 'fail');
       setTimeout(() => setTestResult(null), 2000);
     }, 1000);
   };
